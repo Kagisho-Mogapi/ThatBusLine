@@ -56,6 +56,12 @@ namespace ThatBusLine.Areas.Identity.Pages.Account.Manage
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
+            /// 
+            [Required]
+            [StringLength(25, ErrorMessage = "The location name must be 25 characters long.")]
+            [Display(Name = "Location")]
+            public string Location { get; set; }
+
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
@@ -65,12 +71,14 @@ namespace ThatBusLine.Areas.Identity.Pages.Account.Manage
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            var location = user.Location;
 
             Username = userName;
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                Location = location
             };
         }
 
@@ -109,6 +117,22 @@ namespace ThatBusLine.Areas.Identity.Pages.Account.Manage
                     StatusMessage = "Unexpected error when trying to set phone number.";
                     return RedirectToPage();
                 }
+
+            }
+
+            try
+            {
+
+                if (Input.Location != user.Location)
+                {
+                    user.Location = Input.Location;
+                }
+                await _userManager.UpdateAsync(user);
+            }
+            catch
+            {
+                StatusMessage = "Unexpected error when trying to update profile.";
+                return RedirectToPage();
             }
 
             await _signInManager.RefreshSignInAsync(user);
