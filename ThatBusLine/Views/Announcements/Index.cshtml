@@ -28,7 +28,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.MessageTarget)
             </th>
-            <th></th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -46,9 +46,9 @@
                     @Html.DisplayFor(modelItem => item.MessageTarget)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.ID" class="fa-solid fa-pen"></a>&nbsp;
+                    <a asp-action="Details" asp-route-id="@item.ID" class="fa-solid fa-file"></a>&nbsp;
+                    <a asp-action="Delete" asp-route-id="@item.ID" class="fa-solid fa-x" style="color:red;"></a>
                 </td>
             </tr>
         }
