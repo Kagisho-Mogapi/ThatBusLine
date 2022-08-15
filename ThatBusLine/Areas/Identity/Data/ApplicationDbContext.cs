@@ -34,5 +34,6 @@ public class ApplicationUserEntityConfig : IEntityTypeConfiguration<ApplicationU
         builder.Property(n => n.FirstName).HasMaxLength(25);
         builder.Property(n => n.LastName).HasMaxLength(25);
         builder.Property(n => n.Location).HasMaxLength(25);
+        builder.Property(n => n.Credit).HasMaxLength(25);
     }
 }
