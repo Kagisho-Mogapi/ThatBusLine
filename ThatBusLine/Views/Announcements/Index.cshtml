@@ -2,13 +2,9 @@
 @using Microsoft.AspNetCore.Identity
 @using ThatBusLine.Areas.Identity.Data
 
-@inject SignInManager<ApplicationUser> signInManager
-@inject UserManager<ApplicationUser> userManager
-
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    var user = await userManager.GetUserAsync(User);
 }
 
 <h1>Index</h1>
@@ -33,25 +29,22 @@
     </thead>
     <tbody>
     @foreach (var item in Model) {
-        if(item.MessageTarget == user.Location)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Title)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Message)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.MessageTarget)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.ID" class="fa-solid fa-pen"></a>&nbsp;
-                    <a asp-action="Details" asp-route-id="@item.ID" class="fa-solid fa-file"></a>&nbsp;
-                    <a asp-action="Delete" asp-route-id="@item.ID" class="fa-solid fa-x" style="color:red;"></a>
-                </td>
-            </tr>
-        }
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Message)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MessageTarget)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ID" class="fa-solid fa-pen"></a>&nbsp;
+                <a asp-action="Details" asp-route-id="@item.ID" class="fa-solid fa-file"></a>&nbsp;
+                <a asp-action="Delete" asp-route-id="@item.ID" class="fa-solid fa-x" style="color:red;"></a>
+            </td>
+        </tr>
             
     }
     </tbody>

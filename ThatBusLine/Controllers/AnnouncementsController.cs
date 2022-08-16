@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,18 +14,28 @@ namespace ThatBusLine.Controllers
     public class AnnouncementsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private ApplicationUser? _user;
 
-        public AnnouncementsController(ApplicationDbContext context)
+        public AnnouncementsController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager,ApplicationDbContext context)
         {
             _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         // GET: Announcements
         public async Task<IActionResult> Index()
         {
-              return _context.Announcement != null ? 
-                          View(await _context.Announcement.ToListAsync()) :
+            if (_signInManager.IsSignedIn(User))
+            {
+                _user = await _userManager.GetUserAsync(User);
+                return _context.Announcement != null ?
+                          View(_context.Announcement.Where(n => n.MessageTarget == _user.Location)) :
                           Problem("Entity set 'ApplicationDbContext.Announcement'  is null.");
+            }
+            return View();
         }
 
         // GET: Announcements/Details/5
