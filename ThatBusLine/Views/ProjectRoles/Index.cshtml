@@ -1,0 +1,40 @@
+﻿
+@using Microsoft.AspNetCore.Identity;
+@model IEnumerable<IdentityRole>
+
+<h1>Index</h1>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Create New</a>
+</p>
+
+<p>
+    <a class="btn btn-primary" asp-action="SetUserRole">Set user role</a>
+</p>
+
+    
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <p>Role Id</p>
+            </th>
+            <th>
+                <p>Role Name</p>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+

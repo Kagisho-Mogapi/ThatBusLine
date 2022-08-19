@@ -1,0 +1,47 @@
+﻿
+
+@using ThatBusLine.Areas.Identity.Data;
+@using Microsoft.AspNetCore.Identity;
+@model IEnumerable<ApplicationUser>
+
+@{
+    string myText = "Hello";
+}
+
+<h3>Set user role</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <p>User email</p>
+            </th>
+            <th>
+                <p>User Name</p>
+            </th>
+            <th>
+                <p>User Name</p>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstName) @Html.DisplayFor(modelItem => item.LastName) 
+            </td>
+            <td>
+                @myText
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+<label  class="control-label"> Select Role</label>
+
+<select name="products" class="form-control" asp-items="@ViewBag.roles"></select>
+
+

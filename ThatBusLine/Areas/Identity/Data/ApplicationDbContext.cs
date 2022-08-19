@@ -25,6 +25,8 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     public DbSet<ThatBusLine.Models.Announcement>? Announcement { get; set; }
 
     public DbSet<ThatBusLine.Models.Ticket>? Ticket { get; set; }
+
+    public DbSet<ThatBusLine.Models.ProjectRole>? ProjectRole { get; set; }
 }
 
 public class ApplicationUserEntityConfig : IEntityTypeConfiguration<ApplicationUser>
