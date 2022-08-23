@@ -2,11 +2,8 @@
 
 @using ThatBusLine.Areas.Identity.Data;
 @using Microsoft.AspNetCore.Identity;
+@inject UserManager<ApplicationUser> UserManager
 @model IEnumerable<ApplicationUser>
-
-@{
-    string myText = "Hello";
-}
 
 <h3>Set user role</h3>
 <table class="table">
@@ -19,29 +16,50 @@
                 <p>User Name</p>
             </th>
             <th>
-                <p>User Name</p>
+                <p>User Role</p>
+            </th>
+            <th>
+                <p>Action</p>
             </th>
         </tr>
     </thead>
     <tbody>
-    @foreach (var item in Model) {
+    @foreach (var user in Model) 
+    {
+        
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
+            <td class="col-3">
+                @Html.DisplayFor(modelItem => user.Email)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FirstName) @Html.DisplayFor(modelItem => item.LastName) 
+            <td class="col-3">
+                @Html.DisplayFor(modelItem => user.FirstName) @Html.DisplayFor(modelItem => user.LastName) 
             </td>
-            <td>
-                @myText
+            <td class="col-3">
+                @{
+                    List<string> role = (List<string>)await UserManager.GetRolesAsync(await UserManager.FindByIdAsync(user.Id));
+                    if (role.Count == 0)
+                    {
+                        role.Add("No role yet");
+                    }
+                }
+                @role.ElementAt(0)
+            </td>
+            <td class="col-4">
+                <form method="post" asp-action="RoleProcessor">
+                    <div class="form-group">
+                        <input name="userId" type="hidden" value="@user.Id" />
+                        @*<input  class="form-control" />*@
+                        <div class="col-7 float-start">
+                            <select name="rolesDropdown" class="form-control" asp-items="@ViewBag.roles"></select>
+
+                        </div>
+                        <div>
+                            <input type="submit" value="Submit" class="btn btn-primary col-3 ms-2" />
+                        </div>
+                    </div>
+                </form>
             </td>
         </tr>
 }
     </tbody>
 </table>
-
-<label  class="control-label"> Select Role</label>
-
-<select name="products" class="form-control" asp-items="@ViewBag.roles"></select>
-
-
