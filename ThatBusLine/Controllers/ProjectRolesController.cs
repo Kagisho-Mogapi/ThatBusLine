@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ThatBusLine.Areas.Identity.Data;
@@ -6,11 +7,11 @@ using ThatBusLine.Models;
 
 namespace ThatBusLine.Controllers
 {
+    [Authorize(Roles ="CFO")]
     public class ProjectRolesController : Controller
     {
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<ApplicationUser> _userManager;
-        List<SelectListItem> rolesList = new();
 
         public ProjectRolesController(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
         {
@@ -49,7 +50,7 @@ namespace ThatBusLine.Controllers
 
         public IActionResult SetUserRole()
         {
-            //List<SelectListItem> rolesList = new();
+            List<SelectListItem> rolesList = new();
             int counter = 1;
 
             foreach (var role in _roleManager.Roles)
@@ -69,23 +70,26 @@ namespace ThatBusLine.Controllers
                 Problem("There are no users");
         }
 
-
-        //public IActionResult RoleProcessor()
-        //{
-        //    var bag = ViewBag.roles;
-        //    string role = Request.Query["role"];
-        //    Console.WriteLine(role);
-        //    return View();
-        //}
-
         [HttpPost]
         public async Task<IActionResult> RoleProcessor()
         {
+
             string selectedRole = Request.Form["rolesDropdown"];
             string role = _roleManager.Roles.ToArray()[Convert.ToByte(selectedRole) - 1].ToString();
             string userId = Request.Form["userId"];
             var user = await _userManager.FindByIdAsync(userId);
+
+            //Getting user's current role, removing it and see if there's any
+            List<string> currentUserRole = (List<string>)await _userManager.GetRolesAsync(await _userManager.FindByIdAsync(user.Id));
+            if(currentUserRole.Count != 0)
+            {
+                await _userManager.RemoveFromRoleAsync(user, currentUserRole[0]);
+            }
+
+            //Setting user's new role
             await _userManager.AddToRoleAsync(user, role);
+
+
             return Redirect("SetUserRole");
         }
     }
