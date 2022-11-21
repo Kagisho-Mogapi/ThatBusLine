@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -32,7 +33,7 @@ namespace ThatBusLine.Controllers
             {
                 _user = await _userManager.GetUserAsync(User);
                 return _context.Announcement != null ?
-                          View(_context.Announcement.Where(n => n.MessageTarget == _user.Location)) :
+                          View(_context.Announcement.ToList()) :
                           Problem("Entity set 'ApplicationDbContext.Announcement'  is null.");
             }
             return View();
@@ -57,6 +58,8 @@ namespace ThatBusLine.Controllers
         }
 
         // GET: Announcements/Create
+        [ValidateAntiForgeryToken]
+        //[Authorize(Roles = "Administrator")]
         public IActionResult Create()
         {
             return View();
@@ -67,6 +70,7 @@ namespace ThatBusLine.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Create([Bind("ID,Title,Message,MessageTarget")] Announcement announcement)
         {
             if (ModelState.IsValid)
@@ -79,6 +83,8 @@ namespace ThatBusLine.Controllers
         }
 
         // GET: Announcements/Edit/5
+        [ValidateAntiForgeryToken]
+        //[Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Announcement == null)
@@ -99,6 +105,7 @@ namespace ThatBusLine.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        //[Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Edit(int id, [Bind("ID,Title,Message,MessageTarget")] Announcement announcement)
         {
             if (id != announcement.ID)
@@ -130,6 +137,8 @@ namespace ThatBusLine.Controllers
         }
 
         // GET: Announcements/Delete/5
+        [ValidateAntiForgeryToken]
+        //[Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Announcement == null)
@@ -150,6 +159,7 @@ namespace ThatBusLine.Controllers
         // POST: Announcements/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        //[Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Announcement == null)
@@ -166,6 +176,8 @@ namespace ThatBusLine.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [ValidateAntiForgeryToken]
+        //[Authorize(Roles = "Administrator")]
         private bool AnnouncementExists(int id)
         {
           return (_context.Announcement?.Any(e => e.ID == id)).GetValueOrDefault();

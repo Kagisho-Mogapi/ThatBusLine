@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,20 +12,27 @@ using ThatBusLine.Models;
 
 namespace ThatBusLine.Controllers
 {
+    [Authorize]
     public class TicketsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private ApplicationUser? _user;
 
-        public TicketsController(ApplicationDbContext context)
+        public TicketsController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, ApplicationDbContext context)
         {
             _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         // GET: Tickets
         public async Task<IActionResult> Index()
         {
-              return _context.Ticket != null ? 
-                          View(await _context.Ticket.ToListAsync()) :
+            _user = await _userManager.GetUserAsync(User);
+            return _context.Ticket != null ? 
+                          View(_context.Ticket.Where(a=>a.TicketOwner == _user.Id)) :
                           Problem("Entity set 'ApplicationDbContext.Ticket'  is null.");
         }
 
@@ -56,10 +65,16 @@ namespace ThatBusLine.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,TicketOwner,IsUsed,Price,CreatedAt,UsedAt")] Ticket ticket)
+        public async Task<IActionResult> Create([Bind("ID,Price")] Ticket ticket)
         {
             if (ModelState.IsValid)
             {
+                _user = await _userManager.GetUserAsync(User);
+                ticket.TicketOwner = _user.Id;
+                ticket.IsUsed = false;
+                DateTime nowTime = DateTime.Now;
+                ticket.CreatedAt = nowTime;
+                ticket.UsedAt = nowTime;
                 _context.Add(ticket);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
