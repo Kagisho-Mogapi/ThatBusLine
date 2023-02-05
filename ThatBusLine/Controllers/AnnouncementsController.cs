@@ -29,14 +29,11 @@ namespace ThatBusLine.Controllers
         // GET: Announcements
         public async Task<IActionResult> Index()
         {
-            if (_signInManager.IsSignedIn(User))
-            {
-                _user = await _userManager.GetUserAsync(User);
-                return _context.Announcement != null ?
-                          View(_context.Announcement.ToList()) :
-                          Problem("Entity set 'ApplicationDbContext.Announcement'  is null.");
-            }
-            return View();
+            _user = await _userManager.GetUserAsync(User);
+            return _context.Announcement != null ?
+                      View(_context.Announcement.ToList()) :
+                      Problem("Entity set 'ApplicationDbContext.Announcement'  is null.");
+            
         }
 
         // GET: Announcements/Details/5
